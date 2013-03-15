@@ -5,7 +5,8 @@
   // lol
   var chatUrl = "{{static_url("javascripts/chat.js")}}";
   var urlArgs = chatUrl.split("?")[1];
-  var require = {urlArgs: urlArgs };
+  //var require = {urlArgs: urlArgs };
+  var require = { urlArgs: "v=" +  (new Date()).getTime() };  
 </script>
 <script data-main="/static/javascripts/chat.js" src="static/javascripts/lib/require.js"></script>
 {% end %}

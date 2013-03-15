@@ -6,8 +6,17 @@ from tornado.web import Application, RequestHandler, FallbackHandler
 import redis
 import json
 import os
+import threading
+import humbug
+
+import config
 
 rdb = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+hb_client = humbug.Client(
+    api_key = config.API_KEY,
+    email = config.EMAIL,
+    verbose = True)
 
 connections = []
 
@@ -27,14 +36,17 @@ class WSHandler(WebSocketHandler):
     def on_close(self):
         connections.remove(self) 
 
-class ReceiveHandler(RequestHandler):
-    def post(self):
-        message = json.loads(self.request.body)
-        message['content'] = "<br />".join(message['lines'])
-        del message['lines']
-        msg_str = json.dumps(message)
-        rdb.rpush("messages", msg_str)
-        push_message(msg_str)
+def receiver(message):
+    print message
+    msg = {
+        "stream": message["display_recipient"],
+        "subject": message['subject'],
+        "sender": message['sender_email'],
+        'content': message['content']
+    }
+    msg_str = json.dumps(msg)
+    rdb.rpush("messages", msg_str)
+    push_message(msg_str)
 
 class IndexHandler(RequestHandler):
     def get(self):
@@ -54,9 +66,15 @@ tornado_app = Application([
     (r'/', IndexHandler),
     (r'/chat', ChatHandler),
     (r'/websocket', WSHandler),
-    (r'/receiver', ReceiveHandler),
 ], debug=True, static_path=static_path)
 
+def humbug_thread():
+    hb_client.call_on_each_message(receiver)
+
 if (__name__ == "__main__"):
+    t = threading.Thread(target=humbug_thread)
+    t.setDaemon(True)
+    t.start()
+
     tornado_app.listen(5001)
     IOLoop.instance().start()
