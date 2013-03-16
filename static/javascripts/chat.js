@@ -1,4 +1,6 @@
 define(['message', 'templates'], function(Message, templates) { 
+  var chatboxTemplate = templates['templates/underscore/chatbox.html'];
+
   var MessageCollection = Backbone.Collection.extend({
     model: Message
   });
@@ -15,7 +17,7 @@ define(['message', 'templates'], function(Message, templates) {
   };
 
   var MessageView = Backbone.View.extend({
-    template: templates.chatbox,
+    template: chatboxTemplate,
 
     render: function() {
       this.$el.html(this.template(this.model.attributes));

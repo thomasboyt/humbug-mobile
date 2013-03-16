@@ -10,12 +10,7 @@ import urllib
 
 import humbug
 
-import config
-
-hb_client = humbug.Client(
-    api_key = config.API_KEY,
-    email = config.EMAIL,
-    verbose = True)
+#import config
 
 http_client = httpclient.AsyncHTTPClient()
 
@@ -30,7 +25,6 @@ class WSHandler(WebSocketHandler):
 
     def callback(self, response):
         # do stuff with message
-        print response
         if not response.code == 200:
             print "Connection failed:"
             print response
