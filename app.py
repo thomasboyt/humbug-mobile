@@ -21,7 +21,8 @@ http_client = httpclient.AsyncHTTPClient()
 
 class WSHandler(WebSocketHandler):
     def open(self):
-        # load initial messages
+        self.api_key = self.get_cookie("api_key")
+        self.email = self.get_cookie("email")
         self.humbug_message_init()
 
     def on_message(self, message): 
@@ -29,6 +30,14 @@ class WSHandler(WebSocketHandler):
 
     def callback(self, response):
         # do stuff with message
+        print response
+        if not response.code == 200:
+            print "Connection failed:"
+            print response
+
+            self.write_message("error")
+            return
+
         messages = json.loads(response.body)['messages']
         for data in messages:
             msg = {
@@ -42,8 +51,8 @@ class WSHandler(WebSocketHandler):
 
     def humbug_message_init(self):
         data = {
-            'api-key': config.API_KEY,
-            'email': config.EMAIL
+            'api-key': self.api_key,
+            'email': self.email
         }
 
         http_client.fetch("https://humbughq.com/api/v1/get_messages",
@@ -58,18 +67,24 @@ class WSHandler(WebSocketHandler):
 
 class IndexHandler(RequestHandler):
     def get(self):
-        self.render("templates/index.html")
-
-class ChatHandler(RequestHandler):
-    def get(self):
-        #launch_humbug_thread()
-        self.render("templates/chat.html")
+        if self.get_cookie("email") and self.get_cookie("api_key"):
+            self.render("templates/chat.html")
+        else:
+            self.render("templates/login.html")
+            
+class LoginHandler(RequestHandler):
+    def post(self):
+        email = self.get_argument("email")
+        api_key = self.get_argument("api_key")
+        if (email and api_key):
+            self.set_cookie("email", email)
+            self.set_cookie("api_key", api_key)
 
 static_path = os.path.join(os.path.dirname(__file__), "static")
 
 tornado_app = Application([
     (r'/', IndexHandler),
-    (r'/chat', ChatHandler),
+    (r'/login', LoginHandler),
     (r'/websocket', WSHandler),
 ], debug=True, static_path=static_path)
 

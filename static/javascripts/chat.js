@@ -6,8 +6,12 @@ define(['message', 'templates'], function(Message, templates) {
 
   var ws = new WebSocket("ws://localhost:5001/websocket");
   ws.onmessage = function (evt) {
-     var message = new Message(JSON.parse(evt.data));
-     messageCollection.add(message);
+    if (evt.data == "error") {
+      alert("Humbug connection error.");
+      return;
+    }
+    var message = new Message(JSON.parse(evt.data));
+    messageCollection.add(message);
   };
 
   var MessageView = Backbone.View.extend({
