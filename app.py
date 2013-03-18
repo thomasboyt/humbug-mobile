@@ -31,7 +31,7 @@ class WSHandler(WebSocketHandler):
             'email': self.email
         }
         http_client.fetch("https://humbughq.com/api/v1/send_message",
-            self.callback,
+            None,
             method="POST",
             request_timeout=None,
             body=urllib.urlencode(data)
@@ -50,8 +50,6 @@ class WSHandler(WebSocketHandler):
             self.write_message("error")
             return
 
-        self.humbug_message_init()
-
         messages = json.loads(response.body)['messages']
         print messages
         for data in messages:
@@ -62,6 +60,7 @@ class WSHandler(WebSocketHandler):
                 'content': data['content']
             }
             self.write_message(msg)
+        self.humbug_message_init()
 
     def humbug_message_init(self):
         data = {
