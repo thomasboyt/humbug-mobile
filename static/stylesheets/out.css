@@ -48,3 +48,6 @@ body {
   float: right;
   height: 30px;
 }
+.content {
+  padding: 5px;
+}

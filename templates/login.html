@@ -26,21 +26,22 @@ $(function() {
 
 {% block content %}
 
+<div class="content">
 <h2>Humbug Mobile</h2>
 
 <p><em>the only non-terrible way to use Humbug on the go (for now, at least)</em></p>
 
 <p>Input your login details here:</p>
 
-<form class="form-horizontal">
+<form class="form">
   <div class="control-group">
     <label class="control-label" for="email">Email</label>
     <div class="controls">
-      <input type="text" id="email" placeholder="Email">
+      <input type="email" id="email" placeholder="Email">
     </div>
   </div>
   <div class="control-group">
-    <label class="control-label" for="api-key">API Key</label>
+    <label class="control-label" for="api-key"><a target="_blank" href="https://humbughq.com/#settings/">API Key</a> (goes to Humbug site)</label>
     <div class="controls">
       <input type="text" id="api-key" placeholder="API Key">
     </div>
@@ -51,5 +52,7 @@ $(function() {
     </div>
   </div>
 </form>
+
+</div>
 
 {% end %}
