@@ -10,7 +10,7 @@ import urllib
 
 import humbug
 
-#import config
+import config
 
 http_client = httpclient.AsyncHTTPClient()
 
