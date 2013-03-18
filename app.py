@@ -103,5 +103,5 @@ tornado_app = Application([
 ], debug=True, static_path=static_path)
 
 if (__name__ == "__main__"):
-    tornado_app.listen(5001)
+    tornado_app.listen(config.PORT)
     IOLoop.instance().start()
