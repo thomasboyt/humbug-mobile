@@ -6,7 +6,16 @@ define(['message', 'templates'], function(Message, templates) {
   });
   var messageCollection = new MessageCollection();
 
-  var ws = new WebSocket("ws://localhost:5001/websocket");
+  var loc = window.location, new_uri;
+  if (loc.protocol === "https:") {
+      new_uri = "wss:";
+  } else {
+      new_uri = "ws:";
+  }
+  new_uri += "//" + loc.host;
+  new_uri += loc.pathname + "websocket";
+  
+  var ws = new WebSocket(new_uri);
   ws.onmessage = function (evt) {
     if (evt.data == "error") {
       alert("Humbug connection error.");
