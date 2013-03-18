@@ -2,6 +2,49 @@ body {
   max-width: 600px;
   margin: 0 auto;
 }
-.chatbox .header .username {
+#chat-container {
+  padding: 5px;
+  padding-bottom: 80px;
+}
+.chatbox {
+  border: 1px #000 solid;
+  margin-bottom: 10px;
+}
+.chatbox .header {
   font-weight: bold;
+  background-color: #ccc;
+  border-bottom: 1px #000 solid;
+  padding: 3px;
+}
+.chatbox .messages {
+  padding: 3px;
+}
+.chatbox .messages .name {
+  font-weight: bold;
+}
+#chat-entry {
+  position: fixed;
+  bottom: 0px;
+  background-color: #ddd;
+  border-top: 1px solid #000;
+  width: 100%;
+  max-width: 600px;
+  height: 43px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+#chat-entry .left {
+  float: none;
+  width: auto;
+  overflow: hidden;
+  margin-bottom: 0;
+  padding-right: 20px;
+}
+#chat-entry .left input.message-entry {
+  width: 100%;
+  resize: none;
+}
+#chat-entry .right {
+  float: right;
+  height: 30px;
 }

@@ -3,8 +3,56 @@ body {
   margin: 0 auto;
 }
 
+#chat-container {
+  padding:5px;
+  padding-bottom:80px;
+}
 .chatbox {
-  .header .username {
+  border:1px #000 solid;
+  margin-bottom:10px;
+  .header {
     font-weight:bold;
+    background-color: #ccc;
+    border-bottom:1px #000 solid;
+    padding:3px;
+  }
+
+  .messages {
+    padding:3px;
+
+    .name {
+      font-weight:bold;
+    }
+  }
+}
+
+#chat-entry { 
+  position:fixed;
+  bottom:0px;
+  background-color:#ddd;
+  border-top:1px solid #000;
+  width:100%;
+  max-width:600px;
+
+  height:43px;
+  padding:5px;
+
+  box-sizing:border-box;
+
+  .left {
+    float:none;
+    width:auto;
+    overflow:hidden;
+    input.message-entry {
+      width:100%;
+      resize:none;
+    }
+    margin-bottom:0;
+    padding-right:20px;
+  }
+
+  .right {
+    float:right;
+    height:30px;
   }
 }

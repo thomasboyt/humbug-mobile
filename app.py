@@ -21,10 +21,28 @@ class WSHandler(WebSocketHandler):
         self.humbug_message_init()
 
     def on_message(self, message): 
+        message = json.loads(message)
+        data = {
+            "type": "stream",
+            "to": message['stream'],
+            "subject": message['subject'],
+            "content": message['content'],
+            'api-key': self.api_key,
+            'email': self.email
+        }
+        http_client.fetch("https://humbughq.com/api/v1/send_message",
+            self.callback,
+            method="POST",
+            request_timeout=None,
+            body=urllib.urlencode(data)
+        )
+
         return
 
     def callback(self, response):
-        # do stuff with message
+        if not self.ws_connection:
+            # ws was closed
+            return
         if not response.code == 200:
             print "Connection failed:"
             print response
@@ -32,16 +50,18 @@ class WSHandler(WebSocketHandler):
             self.write_message("error")
             return
 
+        self.humbug_message_init()
+
         messages = json.loads(response.body)['messages']
+        print messages
         for data in messages:
             msg = {
                 "stream": data["display_recipient"],
                 "subject": data['subject'],
-                "sender": data['sender_email'],
+                "sender": data['sender_full_name'],
                 'content': data['content']
             }
             self.write_message(msg)
-        self.humbug_message_init()
 
     def humbug_message_init(self):
         data = {
@@ -73,6 +93,7 @@ class LoginHandler(RequestHandler):
         if (email and api_key):
             self.set_cookie("email", email)
             self.set_cookie("api_key", api_key)
+
 
 static_path = os.path.join(os.path.dirname(__file__), "static")
 
