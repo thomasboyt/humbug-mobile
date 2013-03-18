@@ -17,6 +17,7 @@ define(['message', 'templates'], function(Message, templates) {
   
   var ws = new WebSocket(new_uri);
   ws.onmessage = function (evt) {
+    console.log("onmessage");
     if (evt.data == "error") {
       alert("Humbug connection error.");
       return;
@@ -24,6 +25,10 @@ define(['message', 'templates'], function(Message, templates) {
     var message = new Message(JSON.parse(evt.data));
     messageCollection.add(message);
   };
+
+  ws.onclose = function(e) {
+    alert("Connection to Humbug was closed.");
+  }
 
   var MessageView = Backbone.View.extend({
     template: chatboxTemplate,
@@ -46,9 +51,7 @@ define(['message', 'templates'], function(Message, templates) {
     var last = messageCollection.at(messageCollection.length-2);
     if (last && last.get("subject") == newMessage.get("subject") &&
         last.get("stream") == newMessage.get("stream")) {
-      var addName = true;
-      if (last.get("sender") == newMessage.get("sender"))
-        addName = false;
+      var addName = !(last.get("sender") == newMessage.get("sender"));
       messageViews[messageViews.length-1].addMessage(newMessage, addName);
     }
     else {
