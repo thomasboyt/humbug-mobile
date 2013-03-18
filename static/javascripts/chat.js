@@ -72,33 +72,4 @@ define(['message', 'templates'], function(Message, templates) {
     $(".message-entry").val("");
     ws.send(JSON.stringify(data));
   });
-
-  // throw in fixtures
-  messageCollection.add({
-    sender: "Test A",
-    stream: "Example Stream",
-    subject: "Example Subject",
-    content: "Blah blah blah."
-  })
-  
-  messageCollection.add({
-    sender: "Test A",
-    stream: "Example Stream",
-    subject: "Example Subject",
-    content: "Follow up: blah?"
-  });
-
-  messageCollection.add({
-    sender: "Test B",
-    stream: "Example Stream",
-    subject: "Example Subject",
-    content: "Response: blergh."
-  });
-
-  messageCollection.add({
-    sender: "Test A",
-    stream: "A wholly unrelated stream",
-    subject: "Some other subject",
-    content: "belch."
-  });
 });
