@@ -49,9 +49,9 @@ class WSHandler(WebSocketHandler):
         message = json.loads(message)
         data = {
             "type": "stream",
-            "to": message['stream'],
-            "subject": message['subject'],
-            "content": message['content'],
+            "to": unicode(message['stream']).encode('utf-8'),
+            "subject": unicode(message['subject']).encode('utf-8'),
+            "content": unicode(message['content']).encode('utf-8'),
             'api-key': self.api_key,
             'email': self.email
         }
