@@ -4,7 +4,6 @@ Get dependencies:
 
 ```
 pip install -r requirements.txt
-pip install https://humbughq.com/dist/api/python-humbug_0.1.4~hackerschool.tar.gz
 ```
 
 Enable automatic building of static assets:

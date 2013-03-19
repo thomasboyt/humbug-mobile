@@ -7,10 +7,8 @@ from tornado import httpclient
 import json
 import os
 import urllib
-import sys
 
 import markdown
-import humbug
 
 import config
 
@@ -29,7 +27,6 @@ class WSHandler(WebSocketHandler):
             
     def on_message(self, message): 
         if (message == "load_initial"):
-            print "Loading initial..."
             http_client.fetch("https://humbughq.com/api/v1/subscriptions/list",
                 self.pass_message,
                 method="POST",
