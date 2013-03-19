@@ -104,6 +104,8 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
   var messageViews = [];
 
   messageCollection.on("add", function(newMessage) {
+    var isScrolledBottom = ($(document).height() - $(window).height() == $(document).scrollTop());
+
     var last = messageCollection.at(messageCollection.length-2);
     if (last && last.get("subject") == newMessage.get("subject") &&
         last.get("stream") == newMessage.get("stream")) {
@@ -116,6 +118,10 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
       });
       $("#chat-container").append(view.render().el);
       messageViews.push(view);
+    }
+
+    if (isScrolledBottom) {
+      $(document).scrollTop($(document).height());
     }
   });
 
