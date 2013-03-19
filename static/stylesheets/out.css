@@ -7,12 +7,16 @@ body {
   top: 0px;
   bottom: 80px;
   width: 100%;
-  overflow-x: hidden;
-  overflow-y: scroll;
+  box-sizing: border-box;
+  padding: 5px;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 .chatbox {
   border: 1px #000 solid;
+  box-sizing: border-box;
   margin-bottom: 10px;
+  overflow-x: hidden;
 }
 .chatbox .header {
   font-weight: bold;
