@@ -15,11 +15,27 @@ import config
 http_client = httpclient.AsyncHTTPClient()
 
 class WSHandler(WebSocketHandler):
+    def pass_message(self, response):
+        print response.body
+        self.write_message(response.body)
+
     def open(self):
         self.api_key = self.get_cookie("api_key")
         self.email = self.get_cookie("email")
+        # self.last_timestamp = self.get_cookie("last_timestamp")
+
+        http_client.fetch("https://humbughq.com/api/v1/subscriptions/list",
+            self.pass_message,
+            method="POST",
+            body=urllib.urlencode({ 
+                "api-key": self.api_key,
+                "email": self.email,
+            })
+        )
+
         self.humbug_message_init()
 
+            
     def on_message(self, message): 
         message = json.loads(message)
         data = {

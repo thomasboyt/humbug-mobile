@@ -29,9 +29,17 @@ body {
   border-top: 1px solid #000;
   width: 100%;
   max-width: 600px;
-  height: 43px;
+  height: 90px;
   padding: 5px;
   box-sizing: border-box;
+}
+#chat-entry .stream-selector,
+#chat-entry .subject-entry {
+  width: 48%;
+  float: left;
+}
+#chat-entry .bottom {
+  clear: both;
 }
 #chat-entry .left {
   float: none;
