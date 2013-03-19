@@ -110,7 +110,7 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
   var messageViews = [];
 
   messageCollection.on("add", function(newMessage) {
-    var scrollHeight = $("#chat-container")[0].scrollHeight;
+    var scrollHeight = $("#chat-container")[0].scrollHeight - 10;
     var viewportHeight = $("#chat-container").height();
     var scrollTop = $("#chat-container").scrollTop();
     var isScrolledBottom = (scrollHeight - viewportHeight == scrollTop);
