@@ -98,6 +98,10 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
 
     render: function() {
       this.$el.html(this.template(this.model.attributes));
+      this.$el.click(function(e) {
+        $(".stream-selector").val(this.model.get("stream"));
+        $(".subject-entry").val(this.model.get("subject"));
+      }.bind(this));
       return this;
     }
   });
