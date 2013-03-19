@@ -79,6 +79,10 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
   }
 
   createWebSocket();
+  ws.onopen = function() {
+    ws.send("load_initial");
+  };
+
   // MessageView
   // Depends on: a message collection
 
