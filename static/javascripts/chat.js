@@ -83,9 +83,6 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
     ws.send("load_initial");
   };
 
-  // MessageView
-  // Depends on: a message collection
-
   var MessageView = Backbone.View.extend({
     template: chatboxTemplate,
 
@@ -98,6 +95,12 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
 
     render: function() {
       this.$el.html(this.template(this.model.attributes));
+      
+      // todo: just have a message have a stream association
+      var stream = streamCollection.where({name: this.model.get("stream")})[0];
+      if (stream)
+        this.$(".header").css("background-color", stream.get("color"));
+
       this.$el.click(function(e) {
         $(".stream-selector").val(this.model.get("stream"));
         $(".subject-entry").val(this.model.get("subject"));
