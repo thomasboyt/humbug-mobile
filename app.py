@@ -95,6 +95,17 @@ class WSHandler(WebSocketHandler):
     def get_prior_cb(self, response):
         # for now, just load 20 previous messages
         # in the future: load below cursor, possibly lazy-load backwards?
+
+        if not self.ws_connection:
+            # ws was closed
+            return
+        if not response.code == 200:
+            print "Connection failed:"
+            print response
+
+            self.write_message("error")
+            return
+        
         max_message_id = json.loads(response.body)['max_message_id']
         http_client.fetch("https://humbughq.com/api/v1/get_old_messages",
             self.pass_message,
@@ -120,7 +131,6 @@ class WSHandler(WebSocketHandler):
             request_timeout=None,
             body=urllib.urlencode(data)
         )
-
 
 
 class IndexHandler(RequestHandler):
