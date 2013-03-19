@@ -8,6 +8,7 @@ import json
 import os
 import urllib
 
+import markdown
 import humbug
 
 import config
@@ -73,7 +74,7 @@ class WSHandler(WebSocketHandler):
                 "stream": data["display_recipient"],
                 "subject": data['subject'],
                 "sender": data['sender_full_name'],
-                'content': data['content']
+                'content': markdown.markdown(data['content'], ['fenced_code'])
             }
             self.write_message(msg)
         self.humbug_message_init()

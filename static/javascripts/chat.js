@@ -76,7 +76,7 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
       if (addName) {
         this.$(".messages").append("<div class='name'>" + newMessage.get("sender") + ("</div>"));
       }
-      this.$(".messages").append("<p class='content'>" + newMessage.get("content") + "</p>");
+      this.$(".messages").append("<div class='content'>" + newMessage.get("content") + "</div>");
     },
 
     render: function() {

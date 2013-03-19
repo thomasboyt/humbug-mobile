@@ -12,9 +12,9 @@ __p += '<div class="chatbox"> \n  <div class="header">\n    <span class="stream"
 ((__t = ( subject )) == null ? '' : __t) +
 '</span>\n  </div> \n  <div class="messages">\n    <div class="name">' +
 ((__t = ( sender )) == null ? '' : __t) +
-'</div>\n    <p class="content">' +
+'</div>\n    <div class="content">' +
 ((__t = ( content )) == null ? '' : __t) +
-'</p>\n  </div>\n</div>\n';
+'</div>\n  </div>\n</div>\n';
 
 }
 return __p
