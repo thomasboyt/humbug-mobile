@@ -4,9 +4,14 @@ body {
 }
 
 #chat-container {
-  padding:5px;
-  padding-bottom:80px;
-  overflow:hidden;
+  //height:100%;
+  position:absolute;
+  top:0px;
+  bottom:80px;
+  width:100%;
+  //padding-bottom:80px;
+  overflow-x:hidden;
+  overflow-y:scroll;
 }
 
 .chatbox {
@@ -29,7 +34,7 @@ body {
 }
 
 #chat-entry { 
-  position:fixed;
+  position:absolute;
   bottom:0px;
   background-color:#ddd;
   border-top:1px solid #000;

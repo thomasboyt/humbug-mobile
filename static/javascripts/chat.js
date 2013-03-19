@@ -13,7 +13,6 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
 
   streamCollection.on("reset", function(streams) {
     streams.forEach(function(stream) {
-      console.log(stream.get("name"))
       var option = $("<option value='" + stream.get("name") + "'>");
       option.text(stream.get("name"));
       $(".stream-selector").append(option);
@@ -111,7 +110,15 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
   var messageViews = [];
 
   messageCollection.on("add", function(newMessage) {
-    var isScrolledBottom = ($(document).height() - window.innerHeight == $(document).scrollTop());
+    var scrollHeight = $("#chat-container")[0].scrollHeight;
+    var viewportHeight = $("#chat-container").height();
+    var scrollTop = $("#chat-container").scrollTop();
+    var isScrolledBottom = (scrollHeight - viewportHeight == scrollTop);
+    console.log(scrollHeight);
+    console.log(viewportHeight);
+    console.log(scrollHeight - viewportHeight);
+    console.log(scrollTop);
+    console.log('---');
 
     var last = messageCollection.at(messageCollection.length-2);
     if (last && last.get("subject") == newMessage.get("subject") &&
@@ -128,8 +135,9 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
     }
 
     if (isScrolledBottom) {
-      $(document).scrollTop($(document).height());
+      $("#chat-container").scrollTop(scrollHeight);
     }
+
   });
 
   $("form#send").submit(function(e) {
