@@ -84,7 +84,7 @@ class WSHandler(WebSocketHandler):
         # print data
         if 'messages' in data:
             for message in data['messages']:
-                message['content'] = markdown.markdown(message['content'],  ['fenced_code'])
+                message['content'] = markdown.markdown(message['content'],  ['fenced_code', 'linkify'], safe_mode="escape")
         write_data = json.dumps(data)
         self.write_message(write_data)
 
