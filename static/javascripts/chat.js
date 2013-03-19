@@ -16,6 +16,8 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
       var option = $("<option value='" + stream.get("name") + "'>");
       option.text(stream.get("name"));
       $(".stream-selector").append(option);
+
+      $("form input, form select").attr("disabled", false);
     });
   });
 
