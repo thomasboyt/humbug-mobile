@@ -7,6 +7,7 @@ from tornado import httpclient
 import json
 import os
 import urllib
+import time
 
 import markdown
 import humbug
@@ -17,8 +18,13 @@ http_client = httpclient.AsyncHTTPClient()
 
 class WSHandler(WebSocketHandler):
     def pass_message(self, response):
-        print response.body
-        self.write_message(response.body)
+        data = json.loads(response.body)
+        # print data
+        if 'messages' in data:
+            for message in data['messages']:
+                message['content'] = markdown.markdown(message['content'],  ['fenced_code'])
+        write_data = json.dumps(data)
+        self.write_message(write_data)
 
     def open(self):
         self.api_key = self.get_cookie("api_key")
@@ -31,6 +37,18 @@ class WSHandler(WebSocketHandler):
             body=urllib.urlencode({ 
                 "api-key": self.api_key,
                 "email": self.email,
+            })
+        )
+
+        http_client.fetch("https://humbughq.com/api/v1/get_old_messages",
+            self.pass_message,
+            method="POST",
+            body=urllib.urlencode({
+                "api-key": self.api_key,
+                "email": self.email,
+                "anchor": int(time.time()),
+                "num_before": 20,
+                "num_after": 0
             })
         )
 
@@ -68,7 +86,6 @@ class WSHandler(WebSocketHandler):
             return
 
         messages = json.loads(response.body)['messages']
-        print messages
         for data in messages:
             msg = {
                 "stream": data["display_recipient"],

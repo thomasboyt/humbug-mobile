@@ -48,6 +48,19 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
       if (data['subscriptions']) {
         streamCollection.reset(data['subscriptions']);
       }
+      else if (data['messages']) {
+        data['messages'].forEach(function (message) {
+          if (message.type === "stream") {
+            var messageObject = new Message({
+              content: message.content,
+              sender: message.sender_full_name,
+              subject: message.subject,
+              stream: message.display_recipient
+            });
+            messageCollection.add(messageObject);
+          }
+        });
+      }
       else {
         var message = new Message(data);
         messageCollection.add(message);
