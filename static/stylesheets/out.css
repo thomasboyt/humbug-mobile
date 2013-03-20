@@ -94,12 +94,21 @@ body {
   float: left;
 }
 #bottom-bar .buttons-container {
+  display: none;
   float: right;
   margin-top: 2px;
   margin-right: 5px;
 }
 #bottom-bar .buttons-container i {
   font-size: 24px;
+}
+#bottom-bar #loading-spinner {
+  float: right;
+  margin-top: 2px;
+  margin-right: 5px;
+}
+#bottom-bar #loading-spinner i {
+  font-size: 36px;
 }
 #bottom-bar.hidden {
   bottom: -40px;

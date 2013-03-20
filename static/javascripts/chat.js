@@ -1,4 +1,5 @@
 define(['models/stream', 'models/message', 'templates', 'views/message_view', "ws_wrapper", "helpers"], function(Stream, Message, templates, MessageView, WSWrapper, helpers) { 
+
   var chatboxTemplate = templates['templates/underscore/chatbox.html'];
 
   var MessageCollection = Backbone.Collection.extend({
@@ -51,6 +52,8 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
           messageCollection.add(messageObject);
         }
       });
+
+      if (helpers.isLoading) helpers.toggleLoading();
     }
     else {
       var message = new Message(data);
@@ -71,11 +74,15 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
       this.triedReopen = true;
       this.open();
     }
+    else {
+      alert("Connection to Humbug Mobile lost. Try refreshing the page :(");
+    }
   };
 
   // used on future reconnections
   wsWrapper.onopen = function() {
     this.triedReopen = false;
+    helpers.toggleLoading();
     this.send("load_since", {id: localStorage.getItem("last_id")});
   };
  
