@@ -49,6 +49,7 @@ body {
   padding: 5px;
   box-sizing: border-box;
   -webkit-transition: bottom 0.4s;
+  -webkit-transform: translate3d(0, 0, 0);
 }
 #chat-entry .stream-selector,
 #chat-entry .subject-entry {
@@ -84,6 +85,7 @@ body {
   background-color: #ddd;
   border-top: 1px solid #000;
   -webkit-transition: bottom 0.4s;
+  -webkit-transform: translate3d(0, 0, 0);
 }
 #bottom-bar h2 {
   margin: 0px;

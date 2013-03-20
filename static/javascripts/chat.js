@@ -117,7 +117,9 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
     }
   });
 
-  $("#bottom-bar #reply").click(helpers.showChatEntry);
+  $("#bottom-bar #reply").click(function() {
+    helpers.showChatEntry();
+  });
   $("#chat-container").click(function() {
     if (helpers.chatOpen) 
       helpers.hideChatEntry();
