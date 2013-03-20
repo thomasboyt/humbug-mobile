@@ -67,10 +67,16 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
 
   wsWrapper.onclose = function(e) {
     // attempt to reopen
-    if (!this.didError && e.code != 1006) {
-      console.log("Reopening websocket");
+    if (!this.didError && !this.triedReopen) {
+      this.triedReopen = true;
       this.open();
     }
+  };
+
+  // used on future reconnections
+  wsWrapper.onopen = function() {
+    this.triedReopen = false;
+    this.send("load_since", {id: localStorage.getItem("last_id")});
   };
  
   wsWrapper.open();
@@ -79,12 +85,7 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
   wsWrapper.ws.onopen = function() {
     this.send("load_initial");
   }.bind(wsWrapper);
-
-  // used on future reconnections
-  wsWrapper.onopen = function() {
-    this.send("load_since", {id: localStorage.getItem("last_id")});
-  };
-
+  
   // stupid debug global. please do not commit this dummy
   wsDebug = wsWrapper.ws;
 
