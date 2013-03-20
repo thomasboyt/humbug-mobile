@@ -24,11 +24,15 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
   var wsWrapper = new WSWrapper()
 
   wsWrapper.onmessage = function (evt) {
-    if (evt.data == "error") {
-      alert("Humbug connection error.");
+    var data = JSON.parse(evt.data);
+    if (data.error) {
+      this.didError = true;
+      this.ws.close();
+
+      alert("Mysterious Humbug error.");
+
       return;
     }
-    var data = JSON.parse(evt.data);
     if (data['subscriptions']) {
       streamCollection.reset(data['subscriptions']);
     }
@@ -53,18 +57,22 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
       var message = new Message(data);
       messageCollection.add(message);
     }
-  };
+  }.bind(wsWrapper);
 
   wsWrapper.onerror = function(e) {
     alert("WS error");
+    this.didError = true;
+    this.ws.close();
     console.log(e);
-  };
+  }.bind(wsWrapper);
 
   wsWrapper.onclose = function(e) {
     // attempt to reopen
-    var shouldReconnect = confirm("Lost connection to Humbug. Reconnect?");
-    if (shouldReconnect)
-      this.open();
+    if (!this.didError) {
+      var shouldReconnect = confirm("Lost connection to Humbug. Reconnect?");
+      if (shouldReconnect)
+        this.open();
+    }
   }.bind(wsWrapper);
  
   wsWrapper.open();

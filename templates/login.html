@@ -8,16 +8,15 @@ $(function() {
     var email = $("#email").val();
     var apiKey = $("#api-key").val();
     if (email && apiKey) {
-      console.log("submitting");
       $.post("/login", {
         api_key: apiKey,
         email: email
       }, function(data, textStatus) {
         window.location.reload();
+      })
+      .error(function(error) {
+        alert("Error logging in. Recheck your email and API key.")
       });
-    }
-    else {
-      console.log("not submitting");
     }
   });
 });

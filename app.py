@@ -1,7 +1,7 @@
 from tornado.wsgi import WSGIContainer
 from tornado.ioloop import IOLoop
 from tornado.websocket import WebSocketHandler
-from tornado.web import Application, RequestHandler, FallbackHandler
+from tornado.web import Application, RequestHandler, FallbackHandler, asynchronous
 from tornado import httpclient
 
 import json
@@ -99,7 +99,10 @@ class WSHandler(WebSocketHandler):
             print "Connection failed:"
             print response
 
-            self.write_message("error")
+            self.write_message(json.dumps({
+                "code": response.code,
+                "error": response.code
+            }))
             return
 
         data = json.loads(response.body)
@@ -163,13 +166,30 @@ class IndexHandler(RequestHandler):
             self.render("templates/login.html")
             
 class LoginHandler(RequestHandler):
-    def post(self):
-        email = self.get_argument("email")
-        api_key = self.get_argument("api_key")
-        if (email and api_key):
-            self.set_cookie("email", email)
-            self.set_cookie("api_key", api_key)
+    def check_cb(self, response):
+        print response
+        if response.error:
+            self.send_error(400)
+        else:
+            self.set_cookie("email", self.email)
+            self.set_cookie("api_key", self.api_key)
+        self.finish()
 
+    @asynchronous
+    def post(self):
+        self.email = self.get_argument("email")
+        self.api_key = self.get_argument("api_key")
+
+        if (self.email and self.api_key):
+            http_client.fetch("https://humbughq.com/api/v1/get_profile",
+                self.check_cb,
+                method="POST",
+                body=urllib.urlencode({
+                    "email": self.email,
+                    "api-key": self.api_key
+                })
+            )
+            
 
 static_path = os.path.join(os.path.dirname(__file__), "static")
 

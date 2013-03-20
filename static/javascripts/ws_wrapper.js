@@ -11,6 +11,7 @@ define([], function() {
     newUri += loc.pathname + "websocket";
 
     this.uri = newUri;
+    this.didError = false;
   };
 
   WSWrapper.prototype.open = function() {
