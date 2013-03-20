@@ -29,7 +29,7 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
       this.didError = true;
       this.ws.close();
 
-      alert("Mysterious Humbug error.");
+      alert("Mysterious Humbug error. Try refreshing?");
 
       return;
     }
@@ -39,7 +39,6 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
     else if (data['messages']) {
       data['messages'].forEach(function (message) {
         if (message.type === "stream") {
-          console.log(message);
           var messageObject = new Message({
             content: message.content,
             sender: message.sender_full_name,
@@ -57,23 +56,21 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
       var message = new Message(data);
       messageCollection.add(message);
     }
-  }.bind(wsWrapper);
+  };
 
   wsWrapper.onerror = function(e) {
     alert("WS error");
     this.didError = true;
     this.ws.close();
     console.log(e);
-  }.bind(wsWrapper);
+  };
 
   wsWrapper.onclose = function(e) {
     // attempt to reopen
     if (!this.didError) {
-      var shouldReconnect = confirm("Lost connection to Humbug. Reconnect?");
-      if (shouldReconnect)
-        this.open();
+      this.open();
     }
-  }.bind(wsWrapper);
+  };
  
   wsWrapper.open();
 
@@ -85,7 +82,7 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
   // used on future reconnections
   wsWrapper.onopen = function() {
     this.send("load_since", {id: localStorage.getItem("last_id")});
-  }.bind(wsWrapper);
+  };
 
   // stupid debug global. please do not commit this dummy
   wsDebug = wsWrapper.ws;

@@ -16,10 +16,10 @@ define([], function() {
 
   WSWrapper.prototype.open = function() {
     this.ws = new WebSocket(this.uri);
-    this.ws.onopen = this.onopen;
-    this.ws.onmessage = this.onmessage;
-    this.ws.onerror = this.onerror;
-    this.ws.onclose = this.onclose;
+    this.ws.onopen = this.onopen.bind(this);
+    this.ws.onmessage = this.onmessage.bind(this);
+    this.ws.onerror = this.onerror.bind(this);
+    this.ws.onclose = this.onclose.bind(this);
   };
 
   WSWrapper.prototype.send = function(method, data) {
