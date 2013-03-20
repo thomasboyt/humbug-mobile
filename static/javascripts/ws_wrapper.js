@@ -18,7 +18,6 @@ define([], function() {
     this.onmessage = function () {};
     this.onerror = function () {};
     this.onclose = function() {};
-
   };
     
   WSWrapper.prototype.open = function() {

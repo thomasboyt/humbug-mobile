@@ -1,4 +1,4 @@
-define(['models/stream', 'models/message', 'templates', 'views/message_view', "ws_wrapper"], function(Stream, Message, templates, MessageView, WSWrapper) { 
+define(['models/stream', 'models/message', 'templates', 'views/message_view', "ws_wrapper", "helpers"], function(Stream, Message, templates, MessageView, WSWrapper, helpers) { 
   var chatboxTemplate = templates['templates/underscore/chatbox.html'];
 
   var MessageCollection = Backbone.Collection.extend({
@@ -67,7 +67,8 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
 
   wsWrapper.onclose = function(e) {
     // attempt to reopen
-    if (!this.didError) {
+    console.log(e);
+    if (!this.didError && e.code != 1006) {
       this.open();
     }
   };
@@ -116,7 +117,15 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
     }
   });
 
-  $("form#send").submit(function(e) {
+  $("#bottom-bar #reply").click(helpers.showChatEntry);
+  $("#chat-container").click(function() {
+    if (helpers.chatOpen) 
+      helpers.hideChatEntry();
+  });
+  
+  $("form input, form select").attr("disabled", false);
+
+  $("#chat-entry #send").submit(function(e) {
     e.preventDefault();
     var data = {
       content: $(".message-entry").val(),

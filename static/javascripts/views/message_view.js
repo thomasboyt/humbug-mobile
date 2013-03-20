@@ -1,4 +1,4 @@
-define(['templates'], function(templates) {
+define(['templates', 'helpers'], function(templates, helpers) {
   var MessageView = Backbone.View.extend({
     template: templates['templates/underscore/chatbox.html'],
 
@@ -14,6 +14,10 @@ define(['templates'], function(templates) {
       this.$(".header").css("background-color", this.model.get("stream").get("color"));
 
       this.$el.click(function(e) {
+        if (!helpers.chatOpen) {
+          e.stopPropagation();
+          helpers.showChatEntry();
+        }
         $(".stream-selector").val(this.model.get("stream").get("name"));
         $(".subject-entry").val(this.model.get("subject"));
       }.bind(this));

@@ -4,6 +4,7 @@
     <title>Humbug Phone</title>
   
     <link href="/static/bootstrap/css/bootstrap.css" type="text/css" rel="stylesheet">
+    <link href="/static/stylesheets/font-awesome.css" type="text/css" rel="stylesheet" />
     <link href="/static/stylesheets/out.css" type="text/css" rel="stylesheet" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -16,7 +17,9 @@
     {% block head %}{% end %}
   </head>
   <body>
-    {% block content %}{% end %}
+    <div id="app-container">
+      {% block content %}{% end %}
+    </div>
   </body>
 </html>
 
