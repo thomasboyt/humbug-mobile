@@ -7,7 +7,7 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<div class="chatbox"> \n  <div class="header">\n    <span class="stream">' +
-((__t = ( stream )) == null ? '' : __t) +
+((__t = ( stream.get("name") )) == null ? '' : __t) +
 '</span> &gt; \n    <span class="subject">' +
 ((__t = ( subject )) == null ? '' : __t) +
 '</span>\n  </div> \n  <div class="messages">\n    <div class="name">' +

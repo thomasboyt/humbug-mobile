@@ -1,4 +1,4 @@
-define(['models/stream', 'models/message', 'templates'], function(Stream, Message, templates) { 
+define(['models/stream', 'models/message', 'templates', 'views/message_view', "ws_wrapper"], function(Stream, Message, templates, MessageView, WSWrapper) { 
   var chatboxTemplate = templates['templates/underscore/chatbox.html'];
 
   var MessageCollection = Backbone.Collection.extend({
@@ -21,119 +21,75 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
     });
   });
 
-  // So I'd like to split this out to a separate module, at least the part
-  // where it's not dependant on messageCollection, but the problem is that
-  // when the ws is reopened, it has to be completely reset with a new(),
-  // meaning that it has to rebind onmessage and onclose... no more elegant
-  // way to do that, unfortunately.
+  var wsWrapper = new WSWrapper()
 
-  var ws; //ssssssh. I know what you're saying. There's reasoning here.
-  var createWebSocket = function() {
-    var loc = window.location, new_uri;
-    if (loc.protocol === "https:") {
-        new_uri = "wss:";
-    } else {
-        new_uri = "ws:";
+  wsWrapper.onmessage = function (evt) {
+    if (evt.data == "error") {
+      alert("Humbug connection error.");
+      return;
     }
-    new_uri += "//" + loc.host;
-    new_uri += loc.pathname + "websocket";
-
-    ws = new WebSocket(new_uri);
-
-    ws.onmessage = function (evt) {
-      if (evt.data == "error") {
-        alert("Humbug connection error.");
-        return;
-      }
-      var data = JSON.parse(evt.data);
-      if (data['subscriptions']) {
-        streamCollection.reset(data['subscriptions']);
-      }
-      else if (data['messages']) {
-        data['messages'].forEach(function (message) {
-          if (message.type === "stream") {
-            var messageObject = new Message({
-              content: message.content,
-              sender: message.sender_full_name,
-              subject: message.subject,
-              stream: message.display_recipient
-            });
-            messageCollection.add(messageObject);
-          }
-        });
-      }
-      else {
-        var message = new Message(data);
-        messageCollection.add(message);
-      }
-    };
-
-    ws.onerror = function(e) {
-      alert("WS error");
-      console.log(e);
-    };
-
-    ws.onclose = function(e) {
-      // attempt to reopen
-      createWebSocket(); // see? told you there'd be a reason.
+    var data = JSON.parse(evt.data);
+    if (data['subscriptions']) {
+      streamCollection.reset(data['subscriptions']);
     }
-  }
-
-  createWebSocket();
-  ws.onopen = function() {
-    ws.send("load_initial");
+    else if (data['messages']) {
+      data['messages'].forEach(function (message) {
+        if (message.type === "stream") {
+          var messageObject = new Message({
+            content: message.content,
+            sender: message.sender_full_name,
+            subject: message.subject,
+            stream: streamCollection.where({
+              "name": message.display_recipient
+            })[0]
+          });
+          messageCollection.add(messageObject);
+        }
+      });
+    }
+    else {
+      var message = new Message(data);
+      messageCollection.add(message);
+    }
   };
 
-  var MessageView = Backbone.View.extend({
-    template: chatboxTemplate,
+  wsWrapper.onerror = function(e) {
+    alert("WS error");
+    console.log(e);
+  };
 
-    addMessage: function(newMessage, addName) {
-      if (addName) {
-        this.$(".messages").append("<div class='name'>" + newMessage.get("sender") + ("</div>"));
-      }
-      this.$(".messages").append("<div class='content'>" + newMessage.get("content") + "</div>");
-    },
+  wsWrapper.onclose = function(e) {
+    // attempt to reopen
+    this.open();
+  };
 
-    render: function() {
-      this.$el.html(this.template(this.model.attributes));
-      
-      // todo: just have a message have a stream association
-      var stream = streamCollection.where({name: this.model.get("stream")})[0];
-      if (stream)
-        this.$(".header").css("background-color", stream.get("color"));
+  wsWrapper.open();
+  wsWrapper.ws.onopen = function() {
+    wsWrapper.send("load_initial");
+  };
 
-      this.$el.click(function(e) {
-        $(".stream-selector").val(this.model.get("stream"));
-        $(".subject-entry").val(this.model.get("subject"));
-      }.bind(this));
-      return this;
-    }
-  });
-  var messageViews = [];
+  // which message view should messages be pushed into if stream/subject
+  // are the same
+  var currentMessageView = undefined;
 
   messageCollection.on("add", function(newMessage) {
     var scrollHeight = $("#chat-container")[0].scrollHeight - 10;
     var viewportHeight = $("#chat-container").height();
     var scrollTop = $("#chat-container").scrollTop();
     var isScrolledBottom = (scrollHeight - viewportHeight == scrollTop);
-    console.log(scrollHeight);
-    console.log(viewportHeight);
-    console.log(scrollHeight - viewportHeight);
-    console.log(scrollTop);
-    console.log('---');
-
+    
     var last = messageCollection.at(messageCollection.length-2);
     if (last && last.get("subject") == newMessage.get("subject") &&
         last.get("stream") == newMessage.get("stream")) {
       var addName = !(last.get("sender") == newMessage.get("sender"));
-      messageViews[messageViews.length-1].addMessage(newMessage, addName);
+      currentMessageView.addMessage(newMessage, addName);
     }
     else {
       var view = new MessageView({
         model: newMessage
       });
       $("#chat-container").append(view.render().el);
-      messageViews.push(view);
+      currentMessageView = view;
     }
 
     if (isScrolledBottom) {
@@ -144,16 +100,15 @@ define(['models/stream', 'models/message', 'templates'], function(Stream, Messag
 
   $("form#send").submit(function(e) {
     e.preventDefault();
-    // lazy for now
-    var last = messageCollection.at(messageCollection.length-1);
     var data = {
       content: $(".message-entry").val(),
       stream: $(".stream-selector").val(),
       subject: $(".subject-entry").val()
     };
-    $(".message-entry").val("");
-    ws.send(JSON.stringify(data));
-  });
 
-  
+    wsWrapper.send("new_message", data);
+
+    $(".message-entry").val("");
+  });
+ 
 });

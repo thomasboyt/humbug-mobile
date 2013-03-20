@@ -21,12 +21,16 @@ class WSHandler(WebSocketHandler):
     def open(self):
         self.api_key = self.get_cookie("api_key")
         self.email = self.get_cookie("email")
-        # self.last_timestamp = self.get_cookie("last_timestamp")
-
         self.humbug_message_init()
             
     def on_message(self, message): 
-        if (message == "load_initial"):
+        try:
+            message = json.loads(message)
+        except:
+            print "Malformed JSON ignored"
+            return
+
+        if message["method"] == "load_initial":
             http_client.fetch("https://humbughq.com/api/v1/subscriptions/list",
                 self.pass_message,
                 method="POST",
@@ -44,25 +48,29 @@ class WSHandler(WebSocketHandler):
                     "email": self.email
                 })
             )
-            return
 
-        message = json.loads(message)
-        data = {
-            "type": "stream",
-            "to": unicode(message['stream']).encode('utf-8'),
-            "subject": unicode(message['subject']).encode('utf-8'),
-            "content": unicode(message['content']).encode('utf-8'),
-            'api-key': self.api_key,
-            'email': self.email
-        }
-        http_client.fetch("https://humbughq.com/api/v1/send_message",
-            None,
-            method="POST",
-            request_timeout=None,
-            body=urllib.urlencode(data)
-        )
+        #elif message["method"] == "load_since":
+            
+        
+        elif message["method"] == "new_message":
+            new_message = message["data"]
+            data = {
+                "type": "stream",
+                "to": unicode(new_message['stream']).encode('utf-8'),
+                "subject": unicode(new_message['subject']).encode('utf-8'),
+                "content": unicode(new_message['content']).encode('utf-8'),
+                'api-key': self.api_key,
+                'email': self.email
+            }
+            http_client.fetch("https://humbughq.com/api/v1/send_message",
+                None,
+                method="POST",
+                request_timeout=None,
+                body=urllib.urlencode(data)
+            )
 
-        return
+        else:
+            print "Ignored nonexistant method call (%s)" % (message["method"])
 
     def on_close(self):
         return
