@@ -12,8 +12,15 @@ define([], function() {
 
     this.uri = newUri;
     this.didError = false;
-  };
 
+    // no-op defaults so bind doesn't break
+    this.onopen = function () {};
+    this.onmessage = function () {};
+    this.onerror = function () {};
+    this.onclose = function() {};
+
+  };
+    
   WSWrapper.prototype.open = function() {
     this.ws = new WebSocket(this.uri);
     this.ws.onopen = this.onopen.bind(this);
