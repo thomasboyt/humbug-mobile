@@ -49,8 +49,22 @@ class WSHandler(WebSocketHandler):
                 })
             )
 
-        #elif message["method"] == "load_since":
+        elif message["method"] == "load_since":
+            last_id = message['data']['id']
+
+            data = {
+                "api-key": self.api_key,
+                "email": self.email,
+                "anchor": int(last_id) + 1,
+                "num_before": 0,
+                "num_after": 1000 #this could admittingly use some finessing
+            }
             
+            http_client.fetch("https://humbughq.com/api/v1/get_old_messages",
+                self.pass_message,
+                method="POST",
+                body=urllib.urlencode(data)
+            )
         
         elif message["method"] == "new_message":
             new_message = message["data"]

@@ -35,14 +35,16 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
     else if (data['messages']) {
       data['messages'].forEach(function (message) {
         if (message.type === "stream") {
+          console.log(message);
           var messageObject = new Message({
             content: message.content,
             sender: message.sender_full_name,
             subject: message.subject,
             stream: streamCollection.where({
               "name": message.display_recipient
-            })[0]
+            })[0],
           });
+          localStorage.setItem('last_id', message.id);
           messageCollection.add(messageObject);
         }
       });
@@ -60,13 +62,25 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
 
   wsWrapper.onclose = function(e) {
     // attempt to reopen
-    this.open();
-  };
-
+    var shouldReconnect = confirm("Lost connection to Humbug. Reconnect?");
+    if (shouldReconnect)
+      this.open();
+  }.bind(wsWrapper);
+ 
   wsWrapper.open();
+
+  // used on initial load
   wsWrapper.ws.onopen = function() {
-    wsWrapper.send("load_initial");
-  };
+    this.send("load_initial");
+  }.bind(wsWrapper);
+
+  // used on future reconnections
+  wsWrapper.onopen = function() {
+    this.send("load_since", {id: localStorage.getItem("last_id")});
+  }.bind(wsWrapper);
+
+  // stupid debug global. please do not commit this dummy
+  wsDebug = wsWrapper.ws;
 
   // which message view should messages be pushed into if stream/subject
   // are the same
@@ -95,7 +109,6 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
     if (isScrolledBottom) {
       $("#chat-container").scrollTop(scrollHeight);
     }
-
   });
 
   $("form#send").submit(function(e) {

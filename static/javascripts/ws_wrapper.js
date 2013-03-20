@@ -15,6 +15,7 @@ define([], function() {
 
   WSWrapper.prototype.open = function() {
     this.ws = new WebSocket(this.uri);
+    this.ws.onopen = this.onopen;
     this.ws.onmessage = this.onmessage;
     this.ws.onerror = this.onerror;
     this.ws.onclose = this.onclose;
