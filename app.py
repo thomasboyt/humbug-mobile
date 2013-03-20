@@ -19,6 +19,7 @@ class WSHandler(WebSocketHandler):
     # WS methods
 
     def open(self):
+        print "Client opened connection"
         self.api_key = self.get_cookie("api_key")
         self.email = self.get_cookie("email")
         self.humbug_message_init()
@@ -87,6 +88,7 @@ class WSHandler(WebSocketHandler):
             print "Ignored nonexistant method call (%s)" % (message["method"])
 
     def on_close(self):
+        print "Client closed connection"
         return
 
     # Callbacks
@@ -167,7 +169,6 @@ class IndexHandler(RequestHandler):
             
 class LoginHandler(RequestHandler):
     def check_cb(self, response):
-        print response
         if response.error:
             self.send_error(400)
         else:

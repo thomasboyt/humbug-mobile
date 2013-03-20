@@ -67,8 +67,8 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
 
   wsWrapper.onclose = function(e) {
     // attempt to reopen
-    console.log(e);
     if (!this.didError && e.code != 1006) {
+      console.log("Reopening websocket");
       this.open();
     }
   };
