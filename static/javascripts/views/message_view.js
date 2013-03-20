@@ -20,6 +20,7 @@ define(['templates', 'helpers'], function(templates, helpers) {
         }
         $(".stream-selector").val(this.model.get("stream").get("name"));
         $(".subject-entry").val(this.model.get("subject"));
+        $(".message-entry").focus();
       }.bind(this));
       
       return this;
