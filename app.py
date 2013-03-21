@@ -7,28 +7,32 @@ from tornado import httpclient
 import json
 import os
 import urllib
+import logging
 
 import markdown
 
 import config
 
-http_client = httpclient.AsyncHTTPClient()
+logging.getLogger().setLevel(config.LOG_LEVEL)
+log = logging
+
+http_client = httpclient.AsyncHTTPClient(max_clients=100)
 
 class WSHandler(WebSocketHandler):
     
     # WS methods
 
     def open(self):
-        print "Client opened connection"
+        log.info("WS: Client %s opened connection" % (self.request.remote_ip))
         self.api_key = self.get_cookie("api_key")
         self.email = self.get_cookie("email")
         self.humbug_message_init()
-            
+                    
     def on_message(self, message): 
         try:
             message = json.loads(message)
         except:
-            print "Malformed JSON ignored"
+            log.warn("Malformed JSON ignored.")
             return
 
         if message["method"] == "load_initial":
@@ -85,41 +89,47 @@ class WSHandler(WebSocketHandler):
             )
 
         else:
-            print "Ignored nonexistant method call (%s)" % (message["method"])
+            log.warn("Ignored nonexistant method call (%s)" % (message["method"]))
 
     def on_close(self):
-        print "Client closed connection"
+        log.info("WS: Client %s closed connection" % self.request.remote_ip)
         return
 
     # Callbacks
 
     def pass_message(self, response):
+        log.info("Passing message...")
         if not self.ws_connection:
+            log.warning("hey some jerk disconnected")
             # ws was closed
-            return
+            return False
         if not response.code == 200:
-            print "Connection failed:"
-            print response
+            log.error("Humbug request failed: %s", response.error)
 
             self.write_message(json.dumps({
                 "code": response.code,
                 "error": response.code
             }))
-            return
+            return False
 
         data = json.loads(response.body)
-        # print data
         if 'messages' in data:
             for message in data['messages']:
                 message['content'] = markdown.markdown(message['content'],  ['fenced_code', 'linkify'], safe_mode="escape")
         write_data = json.dumps(data)
         self.write_message(write_data)
 
+        return True
+
     def recursive_cb(self, response):
-        self.pass_message(response)
-        self.humbug_message_init()
+        should_recurse = self.pass_message(response)
+        if should_recurse:
+            self.humbug_message_init()
+        else:
+            log.warning("stopping recursion...")
 
     def get_prior_cb(self, response):
+        log.info("Passing message...") 
         # for now, just load 20 previous messages
         # in the future: load below cursor, possibly lazy-load backwards?
 
@@ -127,12 +137,14 @@ class WSHandler(WebSocketHandler):
             # ws was closed
             return
         if not response.code == 200:
-            print "Connection failed:"
-            print response
+            log.error("Humbug request failed: %s", response.error)
 
-            self.write_message("error")
+            self.write_message(json.dumps({
+                "code": response.code,
+                "error": response.code
+            }))
             return
-        
+ 
         max_message_id = json.loads(response.body)['max_message_id']
         http_client.fetch("https://humbughq.com/api/v1/get_old_messages",
             self.pass_message,
