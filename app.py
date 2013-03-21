@@ -8,6 +8,7 @@ import json
 import os
 import urllib
 import logging
+from datetime import datetime, timedelta
 
 import markdown
 
@@ -181,8 +182,9 @@ class LoginHandler(RequestHandler):
         if response.error:
             self.send_error(400)
         else:
-            self.set_cookie("email", self.email)
-            self.set_cookie("api_key", self.api_key)
+            exprires = datetime.now() + timedelta(days=30)
+            self.set_cookie("email", self.email, expires=expires)
+            self.set_cookie("api_key", self.api_key, expires=expires)
         self.finish()
 
     @asynchronous
