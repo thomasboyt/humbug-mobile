@@ -99,7 +99,7 @@ class WSHandler(WebSocketHandler):
 
     def pass_message(self, response):
         log.debug("Passing message...")
-        if not self.ws_connectionk
+        if not self.ws_connection:
             # ws was closed
             return False
         if not response.code == 200:
