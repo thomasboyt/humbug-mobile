@@ -74,7 +74,7 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
       this.triedReopen = true;
       this.open();
     }
-    else {
+    else if (!this.didError) {
       alert("Connection to Humbug Mobile lost. Try refreshing the page :(");
     }
   };
@@ -121,7 +121,7 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
     }
 
     if (isScrolledBottom) {
-      $("#chat-container").scrollTop(scrollHeight);
+      $("#chat-container").scrollTop($("#chat-container")[0].scrollHeight);
     }
   });
 
