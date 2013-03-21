@@ -31,9 +31,8 @@ module.exports = function(grunt) {
       compile: {
         options: {
           baseUrl: "./static/javascripts/",
-          name: "main",
+          name: "chat",
           paths: {
-            "main": "chat",
             "requireLib": "lib/require"
           },
           include: ["requireLib"],
