@@ -16,7 +16,7 @@ import config
 logging.getLogger().setLevel(config.LOG_LEVEL)
 log = logging
 
-http_client = httpclient.AsyncHTTPClient(max_clients=100)
+http_client = httpclient.AsyncHTTPClient(max_clients=config.MAX_REQUESTS)
 
 class WSHandler(WebSocketHandler):
     
@@ -98,9 +98,8 @@ class WSHandler(WebSocketHandler):
     # Callbacks
 
     def pass_message(self, response):
-        log.info("Passing message...")
-        if not self.ws_connection:
-            log.warning("hey some jerk disconnected")
+        log.debug("Passing message...")
+        if not self.ws_connectionk
             # ws was closed
             return False
         if not response.code == 200:
@@ -125,11 +124,9 @@ class WSHandler(WebSocketHandler):
         should_recurse = self.pass_message(response)
         if should_recurse:
             self.humbug_message_init()
-        else:
-            log.warning("stopping recursion...")
 
     def get_prior_cb(self, response):
-        log.info("Passing message...") 
+        log.debug("Passing message...") 
         # for now, just load 20 previous messages
         # in the future: load below cursor, possibly lazy-load backwards?
 
