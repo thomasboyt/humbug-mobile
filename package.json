@@ -1,0 +1,20 @@
+{
+  "name": "humbug-mobile",
+  "version": "0.0.0",
+  "description": "Get dependencies:",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "grunt": "~0.4.1",
+    "grunt-requirejs": "~0.3.4",
+    "grunt-contrib": "~0.5.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thomasboyt/humbug-mobile.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "gitHead": "c8f90dda49b18296d4495badabeaa3c48f41352a",
+  "readmeFilename": "README.md"
+}

@@ -1,17 +1,16 @@
 {% extends "base.html" %}
 
 {% block head %}
-<script>
-  // this totally blows in like 80 different ways, but requirejs is stupid and
-  // won't support ?querystrings on data-main for some dumb reason.
-  // problem with urlArgs is that applies to ANY required module, and tornado
-  // has different version #s for each file, so we just use a single timestamp
-
-  var chatUrl = "{{static_url("javascripts/chat.js")}}";
-  var urlArgs = chatUrl.split("?")[1];
-  var require = { urlArgs: "v=" +  (new Date()).getTime() };  
-</script>
-<script data-main="/static/javascripts/chat.js" src="static/javascripts/lib/require.js"></script>
+  {% if production %}
+    <script data-main="chat" src="/static/min/app.min.js"></script> 
+  {% else %}
+    <script>
+      var chatUrl = "{{static_url("javascripts/chat.js")}}";
+      var urlArgs = chatUrl.split("?")[1];
+      var require = { urlArgs: "v=" +  (new Date()).getTime() };  
+    </script>
+    <script data-main="/static/javascripts/chat.js" src="static/javascripts/lib/require.js"></script>
+  {% end %}
 {% end %}
 
 {% block content %}

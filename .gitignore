@@ -1,4 +1,5 @@
 *.swp
 *.pyc
+static/min
 config.py
 node_modules/

@@ -173,7 +173,7 @@ class WSHandler(WebSocketHandler):
 class IndexHandler(RequestHandler):
     def get(self):
         if self.get_cookie("email") and self.get_cookie("api_key"):
-            self.render("templates/chat.html")
+            self.render("templates/chat.html", production=config.PRODUCTION)
         else:
             self.render("templates/login.html")
             

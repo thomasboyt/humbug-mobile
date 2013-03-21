@@ -3,17 +3,25 @@
   <head>
     <title>Humbug Phone</title>
   
-    <link href="/static/bootstrap/css/bootstrap.css" type="text/css" rel="stylesheet">
-    <link href="/static/stylesheets/font-awesome.css" type="text/css" rel="stylesheet" />
-    <link href="/static/stylesheets/out.css" type="text/css" rel="stylesheet" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">    
     <meta name="apple-mobile-web-app-title" content="Humbug">    
 
-    <script src="/static/javascripts/lib/jquery-1.9.1.min.js"></script>
-    <script src="/static/javascripts/lib/underscore.js"></script>
-    <script src="/static/javascripts/lib/backbone.js"></script>
+    {% if production %}
+    <!-- <link href="/static/min/lib.min.css" type="text/css" rel="sylesheet"> -->
+      <link href="/static/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+      <link href="/static/stylesheets/font-awesome.min.css" type="text/css" rel="stylesheet">
+      <link href="/static/min/out.min.css" type="text/css" rel="stylesheet">
+      <script src="/static/min/lib.min.js"></script>
+    {% else %}
+      <link href="/static/bootstrap/css/bootstrap.css" type="text/css" rel="stylesheet">
+      <link href="/static/stylesheets/font-awesome.css" type="text/css" rel="stylesheet" />
+      <link href="/static/stylesheets/out.css" type="text/css" rel="stylesheet" />
+
+      <script src="/static/javascripts/lib/jquery-1.9.1.min.js"></script>
+      <script src="/static/javascripts/lib/underscore.js"></script>
+      <script src="/static/javascripts/lib/backbone.js"></script>
+    {% end %}
     {% block head %}{% end %}
   </head>
   <body>
