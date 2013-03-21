@@ -182,7 +182,7 @@ class LoginHandler(RequestHandler):
         if response.error:
             self.send_error(400)
         else:
-            exprires = datetime.now() + timedelta(days=30)
+            expires = datetime.now() + timedelta(days=30)
             self.set_cookie("email", self.email, expires=expires)
             self.set_cookie("api_key", self.api_key, expires=expires)
         self.finish()
