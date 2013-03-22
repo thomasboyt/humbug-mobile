@@ -1,4 +1,4 @@
-define(['models/stream', 'models/message', 'templates', 'views/message_view', "views/chat_view", "ws_wrapper", "helpers"], function(Stream, Message, templates, MessageView, ChatView, WSWrapper, helpers) { 
+define(['models/stream', 'models/message', 'templates', 'views/message_view', "views/chat_view", "ws_adapter", "helpers"], function(Stream, Message, templates, MessageView, ChatView, HumbugWS, helpers) { 
 
   // Initialize Collections
   var MessageCollection = Backbone.Collection.extend({
@@ -11,97 +11,27 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "v
   });
   var streamCollection = new StreamCollection();
 
+  // Initialize WebSocket adapter thing
+  
+  var humbugWS = new HumbugWS(messageCollection, streamCollection);
+
+  humbugWS.on("connecting", function() {
+    helpers.toggleLoading();
+  });
+  humbugWS.on("loaded:messages", function() {
+    if (helpers.isLoading)
+      helpers.toggleLoading();
+  });
+  humbugWS.on("connection_lost", function() {
+    alert("Lost connection to Humbug :(");
+  });
+
+  // Misc View Stuff
+  
   var chatView = new ChatView({
     collection: messageCollection,
     el: $("#chat-container")
   });
-
-  streamCollection.on("reset", function(streams) {
-    streams.forEach(function(stream) {
-      var option = $("<option value='" + stream.get("name") + "'>");
-      option.text(stream.get("name"));
-      $(".stream-selector").append(option);
-
-      $("form input, form select").attr("disabled", false);
-    });
-  });
-
-  var wsWrapper = new WSWrapper()
-
-  wsWrapper.onmessage = function (evt) {
-    var data = JSON.parse(evt.data);
-    if (data.error) {
-      this.didError = true;
-      this.ws.close();
-
-      alert("Mysterious Humbug error. Try refreshing?");
-
-      return;
-    }
-    if (data['subscriptions']) {
-      streamCollection.reset(data['subscriptions']);
-    }
-    else if (data['messages']) {
-      data['messages'].forEach(function (message) {
-        if (message.type === "stream") {
-          var messageObject = new Message({
-            content: message.content,
-            sender: message.sender_full_name,
-            subject: message.subject,
-            stream: streamCollection.where({
-              "name": message.display_recipient
-            })[0],
-          });
-          localStorage.setItem('last_id', message.id);
-          messageCollection.add(messageObject);
-        }
-      });
-
-      if (helpers.isLoading) helpers.toggleLoading();
-    }
-    else {
-      var message = new Message(data);
-      messageCollection.add(message);
-    }
-  };
-
-  wsWrapper.onerror = function(e) {
-    this.ws.close();
-    console.log(e);
-  };
-
-  wsWrapper.onclose = function(e) {
-    // attempt to reopen
-    if (!this.didError && !this.triedReopen) {
-      this.triedReopen = true;
-      this.open();
-    }
-    else {
-      //var shouldRetry = confirm("Connection to Humbug Mobile lost. Retry?");
-      helpers.showRetry();
-      /*if (shouldRetry) {
-        this.didError = false;
-        this.triedReopen = true;
-        this.open();
-      }*/
-    }
-  };
-
-  // used on future reconnections
-  wsWrapper.onopen = function() {
-    this.triedReopen = false;
-    helpers.toggleLoading();
-    this.send("load_since", {id: localStorage.getItem("last_id")});
-  };
- 
-  wsWrapper.open();
-
-  // used on initial load
-  wsWrapper.ws.onopen = function() {
-    this.send("load_initial");
-  }.bind(wsWrapper);
-  
-  // View-ish stuff
  
   $("#bottom-bar #reply").click(function() {
     helpers.showChatEntry();
@@ -112,6 +42,16 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "v
   });
   
   $("form input, form select").attr("disabled", false);
+  
+  streamCollection.on("reset", function(streams) {
+    streams.forEach(function(stream) {
+      var option = $("<option value='" + stream.get("name") + "'>");
+      option.text(stream.get("name"));
+      $(".stream-selector").append(option);
+
+      $("form input, form select").attr("disabled", false);
+    });
+  });
 
   $("#chat-entry #send").submit(function(e) {
     e.preventDefault();
