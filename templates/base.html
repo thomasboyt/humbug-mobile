@@ -18,9 +18,17 @@
       <link href="/static/stylesheets/font-awesome.css" type="text/css" rel="stylesheet" />
       <link href="/static/stylesheets/out.css" type="text/css" rel="stylesheet" />
 
+      <script type='application/javascript' src='/static/javascripts/lib/fastclick.js'></script>    
       <script src="/static/javascripts/lib/jquery-1.9.1.min.js"></script>
       <script src="/static/javascripts/lib/underscore.js"></script>
       <script src="/static/javascripts/lib/backbone.js"></script>
+
+      <script>
+        window.addEventListener('load', function() {
+          new FastClick(document.body);
+        }, false);
+      </script>
+        
     {% end %}
     {% block head %}{% end %}
   </head>
