@@ -34,12 +34,18 @@
 </div>
 <div id="bottom-bar">
   <h2>Humbug</h2>
-  <div class="buttons-container btn-group">
-    <button class="btn" id="reply"><i class='icon-pencil'></i></button>
-    <button class="btn"><i class='icon-list-ul'></i></button>
-  </div>
-  <div id="loading-spinner">
-    <i class="icon-spinner icon-spin"></i>
+  <div class="right">
+    <div class="buttons-container btn-group">
+      <button class="btn" id="reply"><i class='icon-reply'></i></button>
+      <button class="btn"><i class='icon-list-ul'></i></button>
+    </div>
+    <div id="loading-spinner">
+      <i class="icon-spinner icon-spin"></i>
+    </div>
+    <div id="lost-connection">
+      <span>Could not connect to Humbug.</span>
+      <button class="btn" id="reconnect" href="#"><i class="icon-refresh"></i> Retry</button>
+    </div>
   </div>
 </div>
 {% end %}

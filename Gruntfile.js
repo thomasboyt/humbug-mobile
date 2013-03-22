@@ -37,7 +37,7 @@ module.exports = function(grunt) {
           },
           include: ["requireLib"],
           out: "./static/min/app.min.js",
-          optimize: "none"
+          optimize: "uglify"
         }
       }
     },

@@ -101,19 +101,20 @@ blockquote p {
   font-size: 24px;
   float: left;
 }
-#bottom-bar .buttons-container {
-  display: none;
+#bottom-bar .right {
   float: right;
   margin-top: 2px;
   margin-right: 5px;
+}
+#bottom-bar .buttons-container {
+  display: none;
 }
 #bottom-bar .buttons-container i {
   font-size: 24px;
 }
-#bottom-bar #loading-spinner {
-  float: right;
-  margin-top: 2px;
-  margin-right: 5px;
+#bottom-bar #lost-connection {
+  display: none;
+  margin-top: 4px;
 }
 #bottom-bar #loading-spinner i {
   font-size: 36px;

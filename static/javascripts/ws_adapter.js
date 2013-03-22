@@ -1,6 +1,7 @@
 define(['ws_wrapper', 'models/message', 'models/stream'], function(WSWrapper, Message, Stream) {
   var HumbugWS = function(messageCollection, streamCollection) {
-    var wsWrapper = new WSWrapper();
+    this.wsWrapper = new WSWrapper();
+    var wsWrapper = this.wsWrapper;   // convenience ref.
 
     // state
     this.hasConnected = false;
@@ -28,8 +29,7 @@ define(['ws_wrapper', 'models/message', 'models/stream'], function(WSWrapper, Me
     wsWrapper.onclose = function(e) {
       if (!this.didError && !this.triedReopen) {
         this.triedReopen = true;
-        this.trigger("connecting");
-        wsWrapper.open();
+        this.open();
       }
       else {
         this.trigger("connection_lost");
@@ -67,9 +67,14 @@ define(['ws_wrapper', 'models/message', 'models/stream'], function(WSWrapper, Me
       }
     }.bind(this);
 
-    wsWrapper.open();
+    this.open();
   };
 
+  HumbugWS.prototype.open = function() {
+    this.trigger("connecting");
+    this.wsWrapper.open();
+  }
+ 
   _.extend(HumbugWS.prototype, Backbone.Events);
   
   return HumbugWS;

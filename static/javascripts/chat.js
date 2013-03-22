@@ -16,14 +16,13 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "v
   var humbugWS = new HumbugWS(messageCollection, streamCollection);
 
   humbugWS.on("connecting", function() {
-    helpers.toggleLoading();
+    helpers.showLoading();
   });
   humbugWS.on("loaded:messages", function() {
-    if (helpers.isLoading)
-      helpers.toggleLoading();
+    helpers.hideLoading();
   });
   humbugWS.on("connection_lost", function() {
-    alert("Lost connection to Humbug :(");
+    helpers.showRetry();
   });
 
   // Misc View Stuff
@@ -35,6 +34,9 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "v
  
   $("#bottom-bar #reply").click(function() {
     helpers.showChatEntry();
+  });
+  $("#bottom-bar #reconnect").click(function() {
+    humbugWS.open();
   });
   $("#chat-container").click(function() {
     if (helpers.chatOpen) 
