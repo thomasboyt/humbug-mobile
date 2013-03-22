@@ -20,5 +20,10 @@ define([], {
     $("#bottom-bar .buttons-container").toggle();
     $("#bottom-bar #loading-spinner").toggle();
   },
+
+  toggleRetry: function() {
+    $("#bottom-bar .buttons-container").toggle();
+    $("#botom-bar #retry").toggle();
+  }
 });
 

@@ -1,7 +1,6 @@
-define(['models/stream', 'models/message', 'templates', 'views/message_view', "ws_wrapper", "helpers"], function(Stream, Message, templates, MessageView, WSWrapper, helpers) { 
+define(['models/stream', 'models/message', 'templates', 'views/message_view', "views/chat_view", "ws_wrapper", "helpers"], function(Stream, Message, templates, MessageView, ChatView, WSWrapper, helpers) { 
 
-  var chatboxTemplate = templates['templates/underscore/chatbox.html'];
-
+  // Initialize Collections
   var MessageCollection = Backbone.Collection.extend({
     model: Message
   });
@@ -11,6 +10,11 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
     model: Stream
   });
   var streamCollection = new StreamCollection();
+
+  var chatView = new ChatView({
+    collection: messageCollection,
+    el: $("#chat-container")
+  });
 
   streamCollection.on("reset", function(streams) {
     streams.forEach(function(stream) {
@@ -62,8 +66,6 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
   };
 
   wsWrapper.onerror = function(e) {
-    alert("WS error");
-    this.didError = true;
     this.ws.close();
     console.log(e);
   };
@@ -74,8 +76,14 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
       this.triedReopen = true;
       this.open();
     }
-    else if (!this.didError) {
-      alert("Connection to Humbug Mobile lost. Try refreshing the page :(");
+    else {
+      //var shouldRetry = confirm("Connection to Humbug Mobile lost. Retry?");
+      helpers.showRetry();
+      /*if (shouldRetry) {
+        this.didError = false;
+        this.triedReopen = true;
+        this.open();
+      }*/
     }
   };
 
@@ -93,38 +101,8 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "w
     this.send("load_initial");
   }.bind(wsWrapper);
   
-  // stupid debug global. please do not commit this dummy
-  wsDebug = wsWrapper.ws;
-
-  // which message view should messages be pushed into if stream/subject
-  // are the same
-  var currentMessageView = undefined;
-
-  messageCollection.on("add", function(newMessage) {
-    var scrollHeight = $("#chat-container")[0].scrollHeight - 10;
-    var viewportHeight = $("#chat-container").height();
-    var scrollTop = $("#chat-container").scrollTop();
-    var isScrolledBottom = (scrollHeight - viewportHeight == scrollTop);
-    
-    var last = messageCollection.at(messageCollection.length-2);
-    if (last && last.get("subject") == newMessage.get("subject") &&
-        last.get("stream") == newMessage.get("stream")) {
-      var addName = !(last.get("sender") == newMessage.get("sender"));
-      currentMessageView.addMessage(newMessage, addName);
-    }
-    else {
-      var view = new MessageView({
-        model: newMessage
-      });
-      $("#chat-container").append(view.render().el);
-      currentMessageView = view;
-    }
-
-    if (isScrolledBottom) {
-      $("#chat-container").scrollTop($("#chat-container")[0].scrollHeight);
-    }
-  });
-
+  // View-ish stuff
+ 
   $("#bottom-bar #reply").click(function() {
     helpers.showChatEntry();
   });
