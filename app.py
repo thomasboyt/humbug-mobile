@@ -209,7 +209,7 @@ tornado_app = Application([
     (r'/', IndexHandler),
     (r'/login', LoginHandler),
     (r'/websocket', WSHandler),
-], debug=True, static_path=static_path)
+], debug=True, static_path=static_path, gzip=True)
 
 if (__name__ == "__main__"):
     tornado_app.listen(config.PORT)
