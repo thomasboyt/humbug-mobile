@@ -74,6 +74,11 @@ define(['ws_wrapper', 'models/message', 'models/stream'], function(WSWrapper, Me
     this.trigger("connecting");
     this.wsWrapper.open();
   }
+
+  HumbugWS.prototype.send = function(method, data) {
+    this.trigger("sending:" + method);
+    this.wsWrapper.send(method, data);
+  }
  
   _.extend(HumbugWS.prototype, Backbone.Events);
   

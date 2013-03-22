@@ -63,7 +63,7 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "v
       subject: $(".subject-entry").val()
     };
 
-    wsWrapper.send("new_message", data);
+    humbugWS.send("new_message", data);
 
     $(".message-entry").val("");
   });
