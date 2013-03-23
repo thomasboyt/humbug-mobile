@@ -18,10 +18,15 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "v
   humbugWS.on("connecting", function() {
     helpers.showLoading();
   });
+  humbugWS.on("connected", function() {
+    helpers.online = true;
+  });
   humbugWS.on("loaded:messages", function() {
     helpers.hideLoading();
   });
   humbugWS.on("connection_lost", function() {
+    helpers.online = false;
+    helpers.hideChatEntry();
     helpers.showRetry();
   });
 
@@ -66,6 +71,8 @@ define(['models/stream', 'models/message', 'templates', 'views/message_view', "v
     humbugWS.send("new_message", data);
 
     $(".message-entry").val("");
+    helpers.hideChatEntry();
+    $("#chat-container").scrollTop($("#chat-container")[0].scrollHeight);
   });
  
 });
