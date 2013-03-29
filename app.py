@@ -175,7 +175,7 @@ class IndexHandler(RequestHandler):
         if self.get_cookie("email") and self.get_cookie("api_key"):
             self.render("templates/chat.html", production=config.PRODUCTION)
         else:
-            self.render("templates/login.html")
+            self.render("templates/login.html", production=config.PRODUCTION)
             
 class LoginHandler(RequestHandler):
     def check_cb(self, response):
